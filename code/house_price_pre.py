@@ -252,7 +252,7 @@ def rmsle_cv(model):
     kf = KFold(n_folds, shuffle=True, random_state=42).get_n_splits(train.values)
     rmse= np.sqrt(-cross_val_score(model, train.values, y_train, scoring="neg_mean_squared_error", cv = kf))
     return(rmse)
-    
+
 lasso = make_pipeline(RobustScaler(), Lasso(alpha =0.0005, random_state=1))
 ENet = make_pipeline(RobustScaler(), ElasticNet(alpha=0.0005, l1_ratio=.9, random_state=3))
 KRR = KernelRidge(alpha=0.6, kernel='polynomial', degree=2, coef0=2.5)
@@ -272,23 +272,23 @@ model_lgb = lgb.LGBMRegressor(objective='regression',num_leaves=5,
                               bagging_freq = 5, feature_fraction = 0.2319,
                               feature_fraction_seed=9, bagging_seed=9,
                               min_data_in_leaf =6, min_sum_hessian_in_leaf = 11)
-score = rmsle_cv(lasso)
-print("\nLasso score: {:.4f} ({:.4f})\n".format(score.mean(), score.std()))
-
-score = rmsle_cv(ENet)
-print("ElasticNet score: {:.4f} ({:.4f})\n".format(score.mean(), score.std()))
-
-score = rmsle_cv(KRR)
-print("Kernel Ridge score: {:.4f} ({:.4f})\n".format(score.mean(), score.std()))
-
-score = rmsle_cv(GBoost)
-print("Gradient Boosting score: {:.4f} ({:.4f})\n".format(score.mean(), score.std()))
-
-score = rmsle_cv(model_xgb)
-print("Xgboost score: {:.4f} ({:.4f})\n".format(score.mean(), score.std()))
-
-score = rmsle_cv(model_lgb)
-print("LGBM score: {:.4f} ({:.4f})\n" .format(score.mean(), score.std()))
+#score = rmsle_cv(lasso)
+#print("\nLasso score: {:.4f} ({:.4f})\n".format(score.mean(), score.std()))
+#
+#score = rmsle_cv(ENet)
+#print("ElasticNet score: {:.4f} ({:.4f})\n".format(score.mean(), score.std()))
+#
+#score = rmsle_cv(KRR)
+#print("Kernel Ridge score: {:.4f} ({:.4f})\n".format(score.mean(), score.std()))
+#
+#score = rmsle_cv(GBoost)
+#print("Gradient Boosting score: {:.4f} ({:.4f})\n".format(score.mean(), score.std()))
+#
+#score = rmsle_cv(model_xgb)
+#print("Xgboost score: {:.4f} ({:.4f})\n".format(score.mean(), score.std()))
+#
+#score = rmsle_cv(model_lgb)
+#print("LGBM score: {:.4f} ({:.4f})\n" .format(score.mean(), score.std()))
 
 
 
@@ -316,8 +316,8 @@ class AveragingModels(BaseEstimator, RegressorMixin, TransformerMixin):
 
 averaged_models = AveragingModels(models = (ENet, GBoost, KRR, lasso))
 
-score = rmsle_cv(averaged_models)
-print(" Averaged base models score: {:.4f} ({:.4f})\n".format(score.mean(), score.std()))
+#score = rmsle_cv(averaged_models)
+#print(" Averaged base models score: {:.4f} ({:.4f})\n".format(score.mean(), score.std()))
 
 
 
@@ -360,8 +360,8 @@ class StackingAveragedModels(BaseEstimator, RegressorMixin, TransformerMixin):
 stacked_averaged_models = StackingAveragedModels(base_models = (ENet, GBoost, KRR),
                                                  meta_model = lasso)
 
-score = rmsle_cv(stacked_averaged_models)
-print("Stacking Averaged models score: {:.4f} ({:.4f})".format(score.mean(), score.std()))
+#score = rmsle_cv(stacked_averaged_models)
+#print("Stacking Averaged models score: {:.4f} ({:.4f})".format(score.mean(), score.std()))
 
 def rmsle(y, y_pred):
     return np.sqrt(mean_squared_error(y, y_pred))
@@ -369,21 +369,21 @@ def rmsle(y, y_pred):
 stacked_averaged_models.fit(train.values, y_train)
 stacked_train_pred = stacked_averaged_models.predict(train.values)
 stacked_pred = np.expm1(stacked_averaged_models.predict(test.values))
-print(rmsle(y_train, stacked_train_pred))
+#print(rmsle(y_train, stacked_train_pred))
 
 model_xgb.fit(train, y_train)
 xgb_train_pred = model_xgb.predict(train)
 xgb_pred = np.expm1(model_xgb.predict(test))
-print(rmsle(y_train, xgb_train_pred))
+#print(rmsle(y_train, xgb_train_pred))
 
 model_lgb.fit(train, y_train)
 lgb_train_pred = model_lgb.predict(train)
 lgb_pred = np.expm1(model_lgb.predict(test.values))
-print(rmsle(y_train, lgb_train_pred))
+#print(rmsle(y_train, lgb_train_pred))
 
-print('RMSLE score on train data:')
-print(rmsle(y_train,stacked_train_pred*0.70 +
-               xgb_train_pred*0.15 + lgb_train_pred*0.15 ))
+#print('RMSLE score on train data:')
+#print(rmsle(y_train,stacked_train_pred*0.70 +
+#               xgb_train_pred*0.15 + lgb_train_pred*0.15 ))
 
 
 ensemble = stacked_pred*0.70 + xgb_pred*0.15 + lgb_pred*0.15
