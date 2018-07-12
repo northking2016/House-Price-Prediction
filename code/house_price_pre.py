@@ -52,7 +52,7 @@ print("The test data size after dropping Id feature is : {} ".format(test.shape)
 
 
 fig, ax = plt.subplots()
-ax.scatter(x = train['GrLivArea'], y = train['SalePrice'])
+ax.scatter(x = train['ExterQual'], y = train['SalePrice'])
 plt.ylabel('SalePrice', fontsize=13)
 plt.xlabel('GrLivArea', fontsize=13)
 plt.show()
@@ -195,6 +195,48 @@ for c in cols:
     lbl.fit(list(all_data[c].values)) 
     all_data[c] = lbl.transform(list(all_data[c].values))
 
+all_data['ExterQual'][all_data['ExterQual']==2]=1.1
+all_data['ExterQual'][all_data['ExterQual']==1]=3.1
+all_data['ExterQual'][all_data['ExterQual']==3]=2
+all_data['ExterQual'][all_data['ExterQual']==3.1]=3
+all_data['ExterQual'][all_data['ExterQual']==1.1]=1
+
+all_data['GarageCond'][all_data['GarageCond']==3]=0.1
+all_data['GarageCond'][all_data['GarageCond']==4]=1.1
+all_data['GarageCond'][all_data['GarageCond']==1]=2.1
+all_data['GarageCond'][all_data['GarageCond']==5]=3.1
+all_data['GarageCond'][all_data['GarageCond']==2]=4.1
+all_data['GarageCond'][all_data['GarageCond']==0]=5.1
+all_data['GarageCond'] = all_data['GarageCond']-0.1
+
+all_data['BsmtQual'][all_data['BsmtQual']==3]=0.1
+all_data['BsmtQual'][all_data['BsmtQual']==1]=1.1
+all_data['BsmtQual'][all_data['BsmtQual']==4]=2.1
+all_data['BsmtQual'][all_data['BsmtQual']==2]=3.1
+all_data['BsmtQual'][all_data['BsmtQual']==0]=4.1
+all_data['BsmtQual'] = all_data['BsmtQual']-0.1
+
+all_data['KitchenQual'][all_data['KitchenQual']==1]=0.1
+all_data['KitchenQual'][all_data['KitchenQual']==3]=1.1
+all_data['KitchenQual'][all_data['KitchenQual']==2]=2.1
+all_data['KitchenQual'][all_data['KitchenQual']==0]=3.1
+all_data['KitchenQual'] = all_data['KitchenQual']-0.1
+
+all_data['HeatingQC'][all_data['HeatingQC']==3]=0.1
+all_data['HeatingQC'][all_data['HeatingQC']==1]=1.1
+all_data['HeatingQC'][all_data['HeatingQC']==4]=2.1
+all_data['HeatingQC'][all_data['HeatingQC']==2]=3.1
+all_data['HeatingQC'][all_data['HeatingQC']==0]=4.1
+all_data['HeatingQC'] = all_data['HeatingQC']-0.1
+
+all_data['GarageFinish'][all_data['GarageFinish']==1]=0.1
+all_data['GarageFinish'][all_data['GarageFinish']==3]=1.1
+all_data['GarageFinish'][all_data['GarageFinish']==2]=2.1
+all_data['GarageFinish'][all_data['GarageFinish']==0]=3.1
+all_data['GarageFinish'] = all_data['GarageFinish']-0.1
+
+
+
 # shape        
 print('Shape all_data: {}'.format(all_data.shape))
 
@@ -202,6 +244,35 @@ print('Shape all_data: {}'.format(all_data.shape))
 all_data['TotalSF'] = all_data['TotalBsmtSF'] + all_data['1stFlrSF'] + all_data['2ndFlrSF']
 
 numeric_feats = all_data.dtypes[all_data.dtypes != "object"].index
+#train_temp = all_data[:ntrain]
+#train_temp['SalePrice'] = y_train
+#corrmat = train_temp[numeric_feats.insert(0,'SalePrice')].corr()
+#plt.subplots(figsize=(12,9))
+#sns.heatmap(corrmat, vmax=0.9, square=True)
+#
+#correlation = corrmat.iloc[0]
+#correlation.sort_values()
+#
+##train_temp['ExterQual'][train_temp['ExterQual']==2]=1.1
+##train_temp['ExterQual'][train_temp['ExterQual']==1]=3.1
+##train_temp['ExterQual'][train_temp['ExterQual']==3]=2
+##train_temp['ExterQual'][train_temp['ExterQual']==3.1]=3
+##train_temp['ExterQual'][train_temp['ExterQual']==1.1]=1
+#fig, ax = plt.subplots()
+#ax.scatter(train_temp['GarageFinish'], train_temp['SalePrice'])
+#plt.ylabel('SalePrice', fontsize=13)
+#plt.xlabel('GrLivArea', fontsize=13)
+#plt.show()
+#
+#fig, ax = plt.subplots()
+#ax.scatter(train['GarageFinish'], train['SalePrice'])
+#plt.ylabel('SalePrice', fontsize=13)
+#plt.xlabel('GrLivArea', fontsize=13)
+#plt.show()
+
+
+
+
 
 # Check the skew of all numerical features
 skewed_feats = all_data[numeric_feats].apply(lambda x: skew(x.dropna())).sort_values(ascending=False)
@@ -218,7 +289,7 @@ lam = 0.15
 for feat in skewed_features:
     #all_data[feat] += 1
     all_data[feat] = boxcox1p(all_data[feat], lam)
-    
+
 #all_data[skewed_features] = np.log1p(all_data[skewed_features])
     
 all_data = pd.get_dummies(all_data)
